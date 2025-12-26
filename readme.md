@@ -1,4 +1,4 @@
-# 🧠 Local LeetCode — Python Practice System (80/20 Focus)
+# 🚀 DynoCode — Python Practice System (80/20 Focus)
 
 A **local LeetCode-style coding practice platform** built with **Python + Flask**, designed to teach **core Python concepts practically** through **repetition and test-driven problem solving**.
 
