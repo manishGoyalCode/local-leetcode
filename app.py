@@ -12,8 +12,24 @@ from runner.code_runner import evaluate_code
 app = Flask(__name__)
 
 PROBLEMS_DIR = "problems"
+import logging
 # PROGRESS_FILE = "progress.json"  <-- Deprecated
 from database import init_db, mark_solved, get_solved_problems, get_solve_stats
+
+# Configure Logging globally (captures app.py, code_runner.py, etc.)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+
+# If running in Gunicorn, wire up the handlers to stdout/stderr if not already done
+if __name__ != '__main__':
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    logging.getLogger().handlers = gunicorn_logger.handlers
+    logging.getLogger().setLevel(gunicorn_logger.level)
+
+logger = logging.getLogger(__name__)
 
 # Initialize DB
 init_db()
