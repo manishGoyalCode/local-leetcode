@@ -140,6 +140,7 @@ def show_problem(problem_id=None):
     if problem_id is None:
         problem_id = sidebar[0]["problems"][0]["id"]
 
+    logger.info(f"👀 View Problem: {problem_id} | User: {get_user_id()}")
     problem = load_problem(problem_id)
     # OLD: progress = load_progress()
     solved_list = load_solved_list()
@@ -162,10 +163,15 @@ def run_code():
     problem_id = data["problem_id"]
 
     problem = load_problem(problem_id)
+    
+    logger.info(f"🚀 Run Code: {problem_id} | User: {get_user_id()}")
     passed, details = evaluate_code(code, problem)
 
     if passed:
         update_progress(problem_id)
+        logger.info(f"✅ Solved: {problem_id} | User: {get_user_id()}")
+    else:
+        logger.info(f"❌ Failed: {problem_id} | User: {get_user_id()}")
 
     return jsonify({
         "passed": passed,
@@ -239,6 +245,7 @@ def dashboard():
     sidebar = load_problem_index()
     # OLD: progress = load_progress()
     user_id = get_user_id()
+    logger.info(f"📊 Dashboard Visit | User: {user_id}")
     solved_list = load_solved_list()
     solve_stats = get_solve_stats(user_id) # Dict { "2025-12-26": 5 }
 
