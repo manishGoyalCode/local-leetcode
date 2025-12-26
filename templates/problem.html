@@ -28,7 +28,12 @@
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
-        <h3>Problems</h3>
+        <select id="sidebar-track-select" onchange="switchTrack(this.value)"
+          style="width: 100%; border-radius: 6px; padding: 4px; background: var(--bg-hover); color: var(--text-primary); border: 1px solid var(--border); margin-right: 8px;">
+          {% for id, title in all_tracks.items() %}
+          <option value="{{ id }}" {% if id==current_track %}selected{% endif %}>{{ title }}</option>
+          {% endfor %}
+        </select>
         <button class="sidebar-toggle-btn" onclick="toggleDesktopSidebar()" title="Collapse Sidebar">◀</button>
       </div>
 
@@ -110,8 +115,14 @@
       <div class="resizer-h" id="resizer-output"></div>
 
       <!-- OUTPUT -->
-      <div class="output-panel">
-        <pre id="output">Run your code to see output</pre>
+      <div class="output-panel" id="output-panel">
+        <div class="output-header" onclick="toggleOutputPanel()">
+          <span class="output-title">📋 Output / Test Results</span>
+          <span class="output-toggle-icon">▼</span>
+        </div>
+        <div class="output-content">
+          <pre id="output">Ready to run.</pre>
+        </div>
       </div>
 
     </div>
