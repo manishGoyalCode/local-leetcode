@@ -1,0 +1,38 @@
+{
+  "id": "topper_finder",
+  "title": "Class Topper Finder",
+  "description": "Input: `d` (dict of name:marks). Return: Name of student with highest marks.",
+  "difficulty": "Medium",
+  "tags": [
+    "dicts",
+    "logic"
+  ],
+  "hints": [
+    "Track max value and corresponding key"
+  ],
+  "function_signature": "def solve(d):\n    \"\"\"\n    Return result, do not print\n    \"\"\"\n    pass",
+  "sample_input": "{'A': 90, 'B': 80}",
+  "sample_output": "'A'",
+  "test_cases": [
+    {
+      "input": "{'A': 90, 'B': 80}",
+      "output": "'A'"
+    },
+    {
+      "input": "{'X': 50, 'Y': 75}",
+      "output": "'Y'"
+    },
+    {
+      "input": "{'P': 100}",
+      "output": "'P'"
+    },
+    {
+      "input": "{'A': 60, 'B': 60}",
+      "output": "'A'"
+    },
+    {
+      "input": "{'S': 30, 'T': 20}",
+      "output": "'S'"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "id": "packet_generator",
+  "title": "Network Packet Generator",
+  "description": "Input: None. Return: List of integers from 1 to 100 representing packet IDs.",
+  "difficulty": "Easy",
+  "tags": [
+    "loops",
+    "networking"
+  ],
+  "hints": [
+    "Use range(1, 101)"
+  ],
+  "function_signature": "def solve():\n    \"\"\"\n    Return result, do not print\n    \"\"\"\n    pass",
+  "sample_input": "None",
+  "sample_output": "[1, 2, 3, 4, 5]",
+  "test_cases": [
+    {
+      "input": "None",
+      "output": "[1, 2, 3, 4, 5]"
+    },
+    {
+      "input": "None",
+      "output": "[1, 2, 3, 4, 5]"
+    },
+    {
+      "input": "None",
+      "output": "[1, 2, 3, 4, 5]"
+    },
+    {
+      "input": "None",
+      "output": "[1, 2, 3, 4, 5]"
+    },
+    {
+      "input": "None",
+      "output": "[1, 2, 3, 4, 5]"
+    }
+  ]
+}

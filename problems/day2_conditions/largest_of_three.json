@@ -1,0 +1,38 @@
+{
+  "id": "largest_of_three",
+  "title": "Largest of Three Numbers",
+  "description": "Input: `a`, `b`, `c`. Return: The largest number.",
+  "difficulty": "Medium",
+  "tags": [
+    "logic",
+    "comparison"
+  ],
+  "hints": [
+    "Compare a with b and c"
+  ],
+  "function_signature": "def solve(a, b, c):\n    \"\"\"\n    Return result, do not print\n    \"\"\"\n    pass",
+  "sample_input": "1, 2, 3",
+  "sample_output": "3",
+  "test_cases": [
+    {
+      "input": "1, 2, 3",
+      "output": "3"
+    },
+    {
+      "input": "10, 5, 7",
+      "output": "10"
+    },
+    {
+      "input": "-1, -5, -3",
+      "output": "-1"
+    },
+    {
+      "input": "5, 5, 2",
+      "output": "5"
+    },
+    {
+      "input": "9, 9, 9",
+      "output": "9"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "id": "runner_up_score",
+  "title": "Tournament Runner-Up",
+  "description": "Input: `arr` (list) of scores. Return: The second largest score.",
+  "difficulty": "Medium",
+  "tags": [
+    "lists",
+    "sorting"
+  ],
+  "hints": [
+    "Sort unique elements and take second last"
+  ],
+  "function_signature": "def solve(arr):\n    \"\"\"\n    Return result, do not print\n    \"\"\"\n    pass",
+  "sample_input": "1, 2, 3",
+  "sample_output": "2",
+  "test_cases": [
+    {
+      "input": "1, 2, 3",
+      "output": "2"
+    },
+    {
+      "input": "10, 5, 8",
+      "output": "8"
+    },
+    {
+      "input": "5, 5, 5",
+      "output": "5"
+    },
+    {
+      "input": "9, 7, 8",
+      "output": "8"
+    },
+    {
+      "input": "1, 3, 2",
+      "output": "2"
+    }
+  ]
+}

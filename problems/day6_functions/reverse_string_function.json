@@ -1,0 +1,33 @@
+{
+  "id": "reverse_string_function",
+  "title": "Reverse String Function",
+  "description": "Input: `s` (str). Return: The reversed string.",
+  "difficulty": "Easy",
+  "tags": [],
+  "hints": [],
+  "function_signature": "def solve(s):\n    \"\"\"\n    Return result, do not print\n    \"\"\"\n    pass",
+  "sample_input": "'abc'",
+  "sample_output": "'cba'",
+  "test_cases": [
+    {
+      "input": "'abc'",
+      "output": "'cba'"
+    },
+    {
+      "input": "''",
+      "output": "''"
+    },
+    {
+      "input": "'a'",
+      "output": "'a'"
+    },
+    {
+      "input": "'madam'",
+      "output": "'madam'"
+    },
+    {
+      "input": "'python'",
+      "output": "'nohtyp'"
+    }
+  ]
+}

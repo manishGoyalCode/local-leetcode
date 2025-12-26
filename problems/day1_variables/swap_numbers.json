@@ -1,0 +1,38 @@
+{
+  "id": "swap_numbers",
+  "title": "Swap Two Numbers",
+  "description": "Input: `a`, `b`. Return: List `[b, a]`.",
+  "difficulty": "Easy",
+  "tags": [
+    "logic",
+    "variables"
+  ],
+  "hints": [
+    "You can use tuple unpacking: a, b = b, a"
+  ],
+  "function_signature": "def solve(a, b):\n    \"\"\"\n    Return result, do not print\n    \"\"\"\n    pass",
+  "sample_input": "1, 2",
+  "sample_output": "[2, 1]",
+  "test_cases": [
+    {
+      "input": "1, 2",
+      "output": "[2, 1]"
+    },
+    {
+      "input": "5, 10",
+      "output": "[10, 5]"
+    },
+    {
+      "input": "0, 7",
+      "output": "[7, 0]"
+    },
+    {
+      "input": "-1, 1",
+      "output": "[1, -1]"
+    },
+    {
+      "input": "9, 9",
+      "output": "[9, 9]"
+    }
+  ]
+}

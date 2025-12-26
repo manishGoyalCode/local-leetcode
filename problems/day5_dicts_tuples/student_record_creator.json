@@ -1,0 +1,38 @@
+{
+  "id": "student_record_creator",
+  "title": "Student Record Creator",
+  "description": "Input: `name` (str), `marks` (int). Return: Dict `{'name': name, 'marks': marks}` representing a database record.",
+  "difficulty": "Easy",
+  "tags": [
+    "dicts",
+    "data-struct"
+  ],
+  "hints": [
+    "Return a dictionary with keys 'name' and 'marks'"
+  ],
+  "function_signature": "def solve(name, marks):\n    \"\"\"\n    Return result, do not print\n    \"\"\"\n    pass",
+  "sample_input": "'A', 90",
+  "sample_output": "{'name': 'A', 'marks': 90}",
+  "test_cases": [
+    {
+      "input": "'A', 90",
+      "output": "{'name': 'A', 'marks': 90}"
+    },
+    {
+      "input": "'B', 75",
+      "output": "{'name': 'B', 'marks': 75}"
+    },
+    {
+      "input": "'C', 60",
+      "output": "{'name': 'C', 'marks': 60}"
+    },
+    {
+      "input": "'D', 100",
+      "output": "{'name': 'D', 'marks': 100}"
+    },
+    {
+      "input": "'E', 0",
+      "output": "{'name': 'E', 'marks': 0}"
+    }
+  ]
+}

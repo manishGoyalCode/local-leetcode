@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Local LeetCode</title>
+
+  <!-- Monaco Editor -->
+  <script src="https://unpkg.com/monaco-editor@0.45.0/min/vs/loader.js"></script>
+
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="logo">🧠 Local LeetCode</div>
+
+  <nav class="nav">
+    <a href="/dashboard" class="nav-link">📊 Dashboard</a>
+  </nav>
+</header>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h3>Problems</h3>
+
+    {% for group in sidebar %}
+      <div class="day-group">
+        <div class="day-title">{{ group.day }}</div>
+
+        {% for p in group.problems %}
+          <a
+            href="/problem/{{ p.id }}"
+            class="problem-link
+              {% if p.id == problem.id %}active{% endif %}
+              {% if p.id in solved %}solved{% endif %}
+            ">
+            {{ p.title }}
+          </a>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- HEADER -->
+    <div class="header">
+      <h2>{{ problem.title }}</h2>
+
+      <div class="header-actions">
+        <button id="run-btn" onclick="runCode()">▶ Run</button>
+        <button class="secondary" onclick="resetCode()">↺ Reset</button>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="container">
+
+      <!-- PROBLEM PANEL -->
+      <div class="problem-panel">
+        <div class="meta-row">
+          <span class="badge badge-{{ problem.difficulty | lower }}">{{ problem.difficulty }}</span>
+          <div class="tags">
+            {% for tag in problem.tags %}
+              <span class="tag">#{{ tag }}</span>
+            {% endfor %}
+          </div>
+        </div>
+
+        <p>{{ problem.description }}</p>
+
+        <h4>Example</h4>
+        <pre>Input: {{ problem.sample_input }}</pre>
+        <pre>Output: {{ problem.sample_output }}</pre>
+
+        {% if problem.hints %}
+        <div class="hint-box">
+          <details>
+            <summary>Need a hint?</summary>
+            <ul class="hint-list">
+              {% for hint in problem.hints %}
+                <li>{{ hint }}</li>
+              {% endfor %}
+            </ul>
+          </details>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- EDITOR PANEL -->
+      <div class="editor-panel">
+        <div id="editor" class="editor"></div>
+      </div>
+
+    </div>
+
+    <!-- OUTPUT -->
+    <div class="output-panel">
+      <pre id="output">Run your code to see output</pre>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const PROBLEM_ID = "{{ problem.id }}";
+const INITIAL_CODE = `{{ problem.function_signature | safe }}`;
+</script>
+
+<script src="/static/script.js"></script>
+
+</body>
+</html>

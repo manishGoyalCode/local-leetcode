@@ -1,0 +1,33 @@
+{
+  "id": "factorial_function",
+  "title": "Factorial Function",
+  "description": "Input: `n` (int). Return: Factorial of `n`.",
+  "difficulty": "Easy",
+  "tags": [],
+  "hints": [],
+  "function_signature": "def solve(n):\n    \"\"\"\n    Return result, do not print\n    \"\"\"\n    pass",
+  "sample_input": "0",
+  "sample_output": "1",
+  "test_cases": [
+    {
+      "input": "0",
+      "output": "1"
+    },
+    {
+      "input": "1",
+      "output": "1"
+    },
+    {
+      "input": "4",
+      "output": "24"
+    },
+    {
+      "input": "5",
+      "output": "120"
+    },
+    {
+      "input": "6",
+      "output": "720"
+    }
+  ]
+}

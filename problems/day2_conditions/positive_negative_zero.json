@@ -1,0 +1,38 @@
+{
+  "id": "positive_negative_zero",
+  "title": "Positive Negative Zero",
+  "description": "Input: `n` (int). Return: 'Positive', 'Negative' or 'Zero'.",
+  "difficulty": "Easy",
+  "tags": [
+    "logic",
+    "conditions"
+  ],
+  "hints": [
+    "Use elif for multiple conditions"
+  ],
+  "function_signature": "def solve(n):\n    \"\"\"\n    Return result, do not print\n    \"\"\"\n    pass",
+  "sample_input": "5",
+  "sample_output": "'Positive'",
+  "test_cases": [
+    {
+      "input": "5",
+      "output": "'Positive'"
+    },
+    {
+      "input": "-3",
+      "output": "'Negative'"
+    },
+    {
+      "input": "0",
+      "output": "'Zero'"
+    },
+    {
+      "input": "100",
+      "output": "'Positive'"
+    },
+    {
+      "input": "-1",
+      "output": "'Negative'"
+    }
+  ]
+}

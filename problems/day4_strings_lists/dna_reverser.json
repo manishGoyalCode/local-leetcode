@@ -1,0 +1,38 @@
+{
+  "id": "dna_reverser",
+  "title": "DNA Sequence Reverser",
+  "description": "Input: `s` (str) representating a DNA sequence. Return: The reversed sequence string.",
+  "difficulty": "Easy",
+  "tags": [
+    "strings",
+    "bioinformatics"
+  ],
+  "hints": [
+    "String slicing [::-1] is the fastest way"
+  ],
+  "function_signature": "def solve(s):\n    \"\"\"\n    Return result, do not print\n    \"\"\"\n    pass",
+  "sample_input": "'python'",
+  "sample_output": "'nohtyp'",
+  "test_cases": [
+    {
+      "input": "'python'",
+      "output": "'nohtyp'"
+    },
+    {
+      "input": "'madam'",
+      "output": "'madam'"
+    },
+    {
+      "input": "'abc'",
+      "output": "'cba'"
+    },
+    {
+      "input": "''",
+      "output": "''"
+    },
+    {
+      "input": "'a'",
+      "output": "'a'"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "solved": [
+    "even_odd",
+    "prime_check",
+    "area_rectangle",
+    "discounted_price",
+    "age_verifier",
+    "floor_plan_estimator"
+  ],
+  "solve_log": {
+    "2025-12-26": [
+      "discounted_price",
+      "age_verifier",
+      "floor_plan_estimator"
+    ]
+  }
+}

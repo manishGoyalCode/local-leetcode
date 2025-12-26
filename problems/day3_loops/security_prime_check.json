@@ -1,0 +1,39 @@
+{
+  "id": "security_prime_check",
+  "title": "Security Key Validator (Prime)",
+  "description": "Input: `n` (int). Return: `True` if `n` is prime (valid key), else `False`. Prime numbers are improved for encryption keys.",
+  "difficulty": "Medium",
+  "tags": [
+    "loops",
+    "math",
+    "cryptography"
+  ],
+  "hints": [
+    "Check divisibility from 2 to sqrt(n)"
+  ],
+  "function_signature": "def solve(n):\n    \"\"\"\n    Return result, do not print\n    \"\"\"\n    pass",
+  "sample_input": "2",
+  "sample_output": "True",
+  "test_cases": [
+    {
+      "input": "2",
+      "output": "True"
+    },
+    {
+      "input": "3",
+      "output": "True"
+    },
+    {
+      "input": "4",
+      "output": "False"
+    },
+    {
+      "input": "17",
+      "output": "True"
+    },
+    {
+      "input": "20",
+      "output": "False"
+    }
+  ]
+}

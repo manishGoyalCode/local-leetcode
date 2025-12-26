@@ -1,0 +1,38 @@
+{
+  "id": "distance_converter",
+  "title": "GPS Unit Converter",
+  "description": "Input: `km` (float/int). Return: Integer representing meters (1 km = 1000m).",
+  "difficulty": "Easy",
+  "tags": [
+    "math",
+    "conversion"
+  ],
+  "hints": [
+    "1 km is exactly 1000 meters"
+  ],
+  "function_signature": "def solve(km):\n    \"\"\"\n    Return result, do not print\n    \"\"\"\n    pass",
+  "sample_input": "1",
+  "sample_output": "1000",
+  "test_cases": [
+    {
+      "input": "1",
+      "output": "1000"
+    },
+    {
+      "input": "0",
+      "output": "0"
+    },
+    {
+      "input": "2.5",
+      "output": "2500"
+    },
+    {
+      "input": "10",
+      "output": "10000"
+    },
+    {
+      "input": "0.75",
+      "output": "750"
+    }
+  ]
+}

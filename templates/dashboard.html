@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Progress Dashboard</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="dashboard-page">
+
+<header class="topbar">
+  <div class="logo">🧠 Local LeetCode</div>
+  <a href="/" class="nav-link">← Practice</a>
+</header>
+
+<div class="dashboard">
+
+  <h1>📊 Progress Dashboard</h1>
+
+  <!-- TOP STATS -->
+  <div class="dashboard-grid">
+
+    <div class="card stat-card">
+      <h3>Overall Progress</h3>
+      <div class="big">{{ overall_percent }}%</div>
+      <p>{{ solved_count }} / {{ total_count }} problems solved</p>
+
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: {{ overall_percent }}%"></div>
+      </div>
+    </div>
+
+    <div class="card stat-card">
+      <h3>🔥 Streaks</h3>
+      <p><b>Current:</b> {{ current_streak }} days</p>
+      <p><b>Best:</b> {{ best_streak }} days</p>
+    </div>
+
+  </div>
+
+  <!-- DAY WISE -->
+  <div class="card">
+    <h2>📅 Day-wise Progress</h2>
+
+    {% for day in day_stats %}
+      <div class="day-row">
+        <span>{{ day.day }}</span>
+
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: {{ day.percent }}%"></div>
+        </div>
+
+        <span>{{ day.solved }} / {{ day.total }}</span>
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+</body>
+
+</html>

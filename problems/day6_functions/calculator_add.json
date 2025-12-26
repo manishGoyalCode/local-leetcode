@@ -1,0 +1,38 @@
+{
+  "id": "calculator_add",
+  "title": "Calculator Module (Add)",
+  "description": "Input: `a`, `b`. Return: Sum of `a` and `b`. The first step in building a calculator.",
+  "difficulty": "Easy",
+  "tags": [
+    "functions",
+    "math"
+  ],
+  "hints": [
+    "Simply return a + b"
+  ],
+  "function_signature": "def solve(a, b):\n    \"\"\"\n    Return result, do not print\n    \"\"\"\n    pass",
+  "sample_input": "2, 3",
+  "sample_output": "5",
+  "test_cases": [
+    {
+      "input": "2, 3",
+      "output": "5"
+    },
+    {
+      "input": "0, 0",
+      "output": "0"
+    },
+    {
+      "input": "-1, 1",
+      "output": "0"
+    },
+    {
+      "input": "10, 5",
+      "output": "15"
+    },
+    {
+      "input": "7, 8",
+      "output": "15"
+    }
+  ]
+}

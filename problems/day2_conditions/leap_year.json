@@ -1,0 +1,38 @@
+{
+  "id": "leap_year",
+  "title": "Leap Year Check",
+  "description": "Input: `year` (int). Return: `True` if leap year, else `False`.",
+  "difficulty": "Medium",
+  "tags": [
+    "logic",
+    "dates"
+  ],
+  "hints": [
+    "Divisible by 4 but not 100, OR divisible by 400"
+  ],
+  "function_signature": "def solve(year):\n    \"\"\"\n    Return result, do not print\n    \"\"\"\n    pass",
+  "sample_input": "2020",
+  "sample_output": "True",
+  "test_cases": [
+    {
+      "input": "2020",
+      "output": "True"
+    },
+    {
+      "input": "1900",
+      "output": "False"
+    },
+    {
+      "input": "2000",
+      "output": "True"
+    },
+    {
+      "input": "2021",
+      "output": "False"
+    },
+    {
+      "input": "2400",
+      "output": "True"
+    }
+  ]
+}

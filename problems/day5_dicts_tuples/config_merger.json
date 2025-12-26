@@ -1,0 +1,38 @@
+{
+  "id": "config_merger",
+  "title": "System Config Merger",
+  "description": "Input: `d1`, `d2` (dicts). Return: Merged dictionary (`d2` overwrites `d1`). Used for loading settings.",
+  "difficulty": "Easy",
+  "tags": [
+    "dicts",
+    "systems"
+  ],
+  "hints": [
+    "Use .update() method (d1.update(d2))"
+  ],
+  "function_signature": "def solve(d1, d2):\n    \"\"\"\n    Return result, do not print\n    \"\"\"\n    pass",
+  "sample_input": "{'a': 1}, {'b': 2}",
+  "sample_output": "{'a': 1, 'b': 2}",
+  "test_cases": [
+    {
+      "input": "{'a': 1}, {'b': 2}",
+      "output": "{'a': 1, 'b': 2}"
+    },
+    {
+      "input": "{}, {'x': 5}",
+      "output": "{'x': 5}"
+    },
+    {
+      "input": "{'a': 1}, {}",
+      "output": "{'a': 1}"
+    },
+    {
+      "input": "{'a': 1}, {'a': 2}",
+      "output": "{'a': 2}"
+    },
+    {
+      "input": "{'p': 3}, {'q': 4}",
+      "output": "{'p': 3, 'q': 4}"
+    }
+  ]
+}

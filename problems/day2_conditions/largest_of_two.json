@@ -1,0 +1,38 @@
+{
+  "id": "largest_of_two",
+  "title": "Largest of Two Numbers",
+  "description": "Input: `a`, `b`. Return: The larger number.",
+  "difficulty": "Easy",
+  "tags": [
+    "logic",
+    "comparison"
+  ],
+  "hints": [
+    "Use if a > b"
+  ],
+  "function_signature": "def solve(a, b):\n    \"\"\"\n    Return result, do not print\n    \"\"\"\n    pass",
+  "sample_input": "5, 3",
+  "sample_output": "5",
+  "test_cases": [
+    {
+      "input": "5, 3",
+      "output": "5"
+    },
+    {
+      "input": "10, 20",
+      "output": "20"
+    },
+    {
+      "input": "7, 7",
+      "output": "7"
+    },
+    {
+      "input": "-1, -5",
+      "output": "-1"
+    },
+    {
+      "input": "0, 3",
+      "output": "3"
+    }
+  ]
+}

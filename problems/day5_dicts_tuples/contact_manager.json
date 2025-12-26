@@ -1,0 +1,38 @@
+{
+  "id": "contact_manager",
+  "title": "Contact Manager Search",
+  "description": "Input: `phonebook` (dict), `name` (str). Return: Phone number if found, else 'Not Found'.",
+  "difficulty": "Easy",
+  "tags": [
+    "dicts",
+    "search"
+  ],
+  "hints": [
+    "Check 'if name in phonebook'"
+  ],
+  "function_signature": "def solve(phonebook, name):\n    \"\"\"\n    Return result, do not print\n    \"\"\"\n    pass",
+  "sample_input": "{'A': '123'}, 'A'",
+  "sample_output": "'123'",
+  "test_cases": [
+    {
+      "input": "{'A': '123'}, 'A'",
+      "output": "'123'"
+    },
+    {
+      "input": "{'A': '123'}, 'B'",
+      "output": "'Not Found'"
+    },
+    {
+      "input": "{}, 'X'",
+      "output": "'Not Found'"
+    },
+    {
+      "input": "{'P': '999'}, 'P'",
+      "output": "'999'"
+    },
+    {
+      "input": "{'K': '111'}, 'Z'",
+      "output": "'Not Found'"
+    }
+  ]
+}
