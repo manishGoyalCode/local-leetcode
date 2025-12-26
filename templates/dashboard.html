@@ -79,20 +79,7 @@
 
   <div class="dashboard">
 
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-      <h1 style="margin: 0;">📊 Progress Dashboard</h1>
-
-      <div class="track-selector">
-        <label for="track-select"
-          style="margin-right: 8px; color: var(--text-secondary); font-size: 14px;">Curriculum:</label>
-        <select id="track-select" onchange="switchTrack(this.value)"
-          style="padding: 8px; border-radius: 6px; background: var(--bg-panel); color: var(--text-primary); border: 1px solid var(--border);">
-          {% for id, title in all_tracks.items() %}
-          <option value="{{ id }}" {% if id==current_track %}selected{% endif %}>{{ title }}</option>
-          {% endfor %}
-        </select>
-      </div>
-    </div>
+    <h1>📊 Progress Dashboard</h1>
 
     <div class="dashboard-grid">
 
@@ -138,19 +125,6 @@
   <script>
     // Injected by Flask
     const CURRICULUM = {{ sidebar | tojson }};
-
-    function switchTrack(trackId) {
-      if (!trackId) return;
-      fetch(`/switch_track/${trackId}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.status === "ok") {
-            window.location.reload();
-          } else {
-            alert("Failed to switch track");
-          }
-        });
-    }
 
     document.addEventListener("DOMContentLoaded", () => {
       const solved = JSON.parse(localStorage.getItem("solved_problems") || "[]");

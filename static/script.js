@@ -29,9 +29,6 @@ function toggleDesktopSidebar() {
   const sidebar = document.getElementById("sidebar");
   const showBtn = document.getElementById("show-sidebar-btn");
 
-  // Force removal of manual width so CSS class works
-  sidebar.style.width = "";
-
   // Toggle class
   sidebar.classList.toggle("collapsed");
 
@@ -51,20 +48,6 @@ function toggleDesktopSidebar() {
    RESIZABLE PANELS
    ====================================================== */
 
-/* ======================================================
-   OUTPUT TOGGLE
-   ====================================================== */
-
-function toggleOutputPanel() {
-  const panel = document.getElementById("output-panel");
-  panel.classList.toggle("collapsed");
-}
-
-function expandOutputPanel() {
-  const panel = document.getElementById("output-panel");
-  panel.classList.remove("collapsed");
-}
-
 function initResizers() {
   const sidebar = document.getElementById("sidebar");
   const resizerSidebar = document.getElementById("resizer-sidebar");
@@ -76,9 +59,6 @@ function initResizers() {
   const container = document.querySelector(".container");
   const resizerOutput = document.getElementById("resizer-output");
   const outputPanel = document.querySelector(".output-panel");
-
-  // Default to collapsed on load to save space
-  outputPanel.classList.add("collapsed");
 
   // 1. Sidebar Resizer
   if (resizerSidebar) {
@@ -149,7 +129,6 @@ function initResizers() {
     if (newHeight > 50 && newHeight < windowHeight * 0.6) {
       outputPanel.style.height = newHeight + "px";
       container.style.height = `calc(100vh - 58px - ${newHeight}px)`;
-      outputPanel.classList.remove("collapsed"); // Auto-expand on manual resize
     }
   }
 
@@ -223,26 +202,6 @@ const EDITOR_CONFIG = {
   hover: { delay: 800 }
 };
 
-/* ======================================================
-   USER IDENTITY
-   ====================================================== */
-
-/* ======================================================
-   COMMON ACTIONS
-   ====================================================== */
-
-function switchTrack(trackId) {
-  if (!trackId) return;
-  fetch(`/switch_track/${trackId}`)
-    .then(res => res.json())
-    .then(data => {
-      if (data.status === "ok") {
-        window.location.reload();
-      } else {
-        alert("Failed to switch track");
-      }
-    });
-}
 /* ======================================================
    USER IDENTITY
    ====================================================== */
@@ -323,8 +282,6 @@ function focusEditor() {
 
 function runCode() {
   if (isRunning) return;
-
-  expandOutputPanel(); // Auto-show results
 
   isRunning = true;
   updateRunButton(true);
