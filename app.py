@@ -237,6 +237,12 @@ def dashboard():
 # ======================================================
 # ENTRY POINT
 # ======================================================
+@app.route("/")
+def hello():
+    return "Hello from DO App Platform!"
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 8080))
+    )
