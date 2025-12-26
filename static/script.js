@@ -93,7 +93,8 @@ function getEditorContainer() {
 ====================================================== */
 
 function loadMonaco() {
-  initUser(); // Initialize user before loading editor
+  initUser(); // Initialize user
+  initProgress(); // Initialize sidebar status
   require.config({ paths: { vs: MONACO_CDN } });
 
   require(["vs/editor/editor.main"], () => {
@@ -210,6 +211,12 @@ function renderTestResults(data) {
   });
 
   output.classList.add(data.passed ? "success" : "failure");
+
+  if (data.passed) {
+    if (typeof PROBLEM_ID !== 'undefined') {
+      markProblemSolved(PROBLEM_ID);
+    }
+  }
 }
 
 function createTestRow(test) {
@@ -286,6 +293,50 @@ function showToast(msg) {
     toast.style.opacity = "0";
     setTimeout(() => toast.remove(), 300);
   }, 2000);
+}
+
+/* ======================================================
+   CLIENT-SIDE PROGRESS
+====================================================== */
+
+function initProgress() {
+  // Apply checks to sidebar based on localStorage
+  const solved = JSON.parse(localStorage.getItem("solved_problems") || "[]");
+
+  // Find sidebar links and add checkmark
+  const links = document.querySelectorAll(".sidebar a.problem-link");
+  links.forEach(link => {
+    //Extract ID from href /problem/abc
+    const href = link.getAttribute("href");
+    const id = href.split("/").pop();
+
+    if (solved.includes(id)) {
+      // Check if already has checkmark to avoid double add
+      if (!link.innerText.includes("✅")) {
+        link.innerText = "✅ " + link.innerText;
+      }
+    }
+  });
+}
+
+function markProblemSolved(id) {
+  const solved = JSON.parse(localStorage.getItem("solved_problems") || "[]");
+
+  if (!solved.includes(id)) {
+    solved.push(id);
+    localStorage.setItem("solved_problems", JSON.stringify(solved));
+
+    // Log solve for stats (Dictionary: Date -> Count)
+    const log = JSON.parse(localStorage.getItem("solve_log") || "{}");
+    const today = new Date().toISOString().split('T')[0];
+    log[today] = (log[today] || 0) + 1;
+    localStorage.setItem("solve_log", JSON.stringify(log));
+
+    showToast("🏆 Problem Solved! Progress Saved.");
+
+    // Update Sidebar immediately
+    initProgress();
+  }
 }
 
 /* ======================================================
