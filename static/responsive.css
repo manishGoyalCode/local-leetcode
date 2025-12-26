@@ -1,0 +1,118 @@
+/* ======================================================
+   MOBILE & RESPONSIVE DESIGN
+   ====================================================== */
+
+@media (max-width: 768px) {
+
+    /* Sidebar: Hide by default, slide over when toggled */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 1000;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        box-shadow: 10px 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    /* Main Layout: Column Mode */
+    .main {
+        overflow-y: auto;
+        /* Allow full page scrolling */
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .container {
+        flex-direction: column;
+        height: auto;
+        /* Let content dictate height */
+        flex: 0 0 auto;
+    }
+
+    /* Hide standard resizers on mobile to simplify */
+    .resizer,
+    .resizer-h {
+        display: none !important;
+    }
+
+    /* Header: Adjust spacing */
+    .header {
+        padding: 12px 16px;
+    }
+
+    .header h2 {
+        font-size: 16px;
+        max-width: 60vw;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Problem Panel */
+    .problem-panel {
+        width: 100%;
+        height: auto;
+        max-height: 35vh;
+        /* Reduce slightly to show editor teaser */
+        padding: 20px;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+
+    /* Editor Panel */
+    .editor-panel {
+        width: 100%;
+        height: 50vh;
+        /* Fixed reasonable height */
+    }
+
+    /* Output Panel */
+    .output-panel {
+        height: auto;
+        min-height: 250px;
+        border-top: 1px solid var(--border);
+        flex: 0 0 auto;
+    }
+
+    /* Dashboard: Single Column */
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .day-row {
+        grid-template-columns: 1fr 1fr;
+        /* Stack visuals differently if needed or squeeze */
+    }
+
+    /* Hamburger Menu Button (Only visible on mobile) */
+    .menu-toggle {
+        display: block;
+        background: none;
+        border: none;
+        color: var(--text-primary);
+        font-size: 24px;
+        padding: 0;
+        margin-right: 12px;
+        box-shadow: none;
+    }
+
+    /* Topbar */
+    .topbar {
+        padding: 0 16px;
+    }
+
+    .logo {
+        display: none;
+        /* Hide logo in editor view to save space, show burger */
+    }
+}
+
+/* Hide toggle on desktop */
+.menu-toggle {
+    display: none;
+}

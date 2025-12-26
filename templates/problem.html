@@ -3,16 +3,20 @@
 
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DynoCode</title>
 
   <!-- Monaco Editor -->
   <script src="https://unpkg.com/monaco-editor@0.45.0/min/vs/loader.js"></script>
 
   <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/responsive.css">
+  <link rel="stylesheet" href="/static/resizer.css">
 </head>
 
 <body>
   <header class="topbar">
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
     <div class="logo">🚀 DynoCode</div>
 
     <nav class="nav">
@@ -22,8 +26,11 @@
   <div class="app">
 
     <!-- SIDEBAR -->
-    <aside class="sidebar">
-      <h3>Problems</h3>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h3>Problems</h3>
+        <button class="sidebar-toggle-btn" onclick="toggleDesktopSidebar()" title="Collapse Sidebar">◀</button>
+      </div>
 
       {% for group in sidebar %}
       <div class="day-group">
@@ -40,13 +47,18 @@
       </div>
       {% endfor %}
     </aside>
+    <div class="resizer" id="resizer-sidebar"></div>
 
     <!-- MAIN -->
     <div class="main">
 
       <!-- HEADER -->
       <div class="header">
-        <h2>{{ problem.title }}</h2>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <button id="show-sidebar-btn" class="sidebar-show-btn" onclick="toggleDesktopSidebar()" title="Show Sidebar"
+            style="display: none;">▶</button>
+          <h2>{{ problem.title }}</h2>
+        </div>
 
         <div class="header-actions">
           <button id="run-btn" onclick="runCode()">▶ Run</button>
@@ -87,6 +99,7 @@
           </div>
           {% endif %}
         </div>
+        <div class="resizer" id="resizer-panel"></div>
 
         <!-- EDITOR PANEL -->
         <div class="editor-panel">
@@ -94,6 +107,7 @@
         </div>
 
       </div>
+      <div class="resizer-h" id="resizer-output"></div>
 
       <!-- OUTPUT -->
       <div class="output-panel">

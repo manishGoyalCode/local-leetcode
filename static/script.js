@@ -1,10 +1,155 @@
 /* ======================================================
    GLOBAL STATE
-====================================================== */
+   ====================================================== */
 
 let editor = null;
 let isRunning = false;
 let currentUserId = null;
+
+/* ======================================================
+   SIDEBAR CONTROLS
+   ====================================================== */
+
+function toggleSidebar() {
+  const sidebar = document.querySelector(".sidebar");
+  sidebar.classList.toggle("open");
+
+  // Close when clicking a link (mobile only)
+  if (window.innerWidth <= 768) {
+    const links = document.querySelectorAll(".problem-link");
+    links.forEach(link => {
+      link.addEventListener("click", () => {
+        sidebar.classList.remove("open");
+      });
+    });
+  }
+}
+
+function toggleDesktopSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  const showBtn = document.getElementById("show-sidebar-btn");
+
+  // Toggle class
+  sidebar.classList.toggle("collapsed");
+
+  // Check current state
+  const isCollapsed = sidebar.classList.contains("collapsed");
+
+  // Update Button Visibility
+  if (showBtn) {
+    showBtn.style.display = isCollapsed ? "block" : "none";
+  }
+
+  // Save to LocalStorage
+  localStorage.setItem("sidebar_collapsed", isCollapsed);
+}
+
+/* ======================================================
+   RESIZABLE PANELS
+   ====================================================== */
+
+function initResizers() {
+  const sidebar = document.getElementById("sidebar");
+  const resizerSidebar = document.getElementById("resizer-sidebar");
+
+  const problemPanel = document.querySelector(".problem-panel");
+  const resizerPanel = document.getElementById("resizer-panel");
+  const editorPanel = document.querySelector(".editor-panel");
+
+  const container = document.querySelector(".container");
+  const resizerOutput = document.getElementById("resizer-output");
+  const outputPanel = document.querySelector(".output-panel");
+
+  // 1. Sidebar Resizer
+  if (resizerSidebar) {
+    resizerSidebar.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      document.addEventListener("mousemove", resizeSidebar);
+      document.addEventListener("mouseup", stopResizeSidebar);
+      resizerSidebar.classList.add("resizing");
+    });
+  }
+
+  function resizeSidebar(e) {
+    const newWidth = e.clientX;
+    if (newWidth > 150 && newWidth < 500) {
+      sidebar.style.width = newWidth + "px";
+    }
+  }
+
+  function stopResizeSidebar() {
+    document.removeEventListener("mousemove", resizeSidebar);
+    document.removeEventListener("mouseup", stopResizeSidebar);
+    resizerSidebar.classList.remove("resizing");
+  }
+
+  // 2. Panel Split (Problem vs Editor)
+  if (resizerPanel) {
+    resizerPanel.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      document.addEventListener("mousemove", resizePanel);
+      document.addEventListener("mouseup", stopResizePanel);
+      resizerPanel.classList.add("resizing");
+    });
+  }
+
+  function resizePanel(e) {
+    // Calculate percentage width relative to container
+    const containerWidth = container.offsetWidth;
+    const x = e.clientX - sidebar.getBoundingClientRect().right;
+    const newPercent = (x / containerWidth) * 100;
+
+    if (newPercent > 20 && newPercent < 80) {
+      problemPanel.style.width = `${newPercent}%`;
+      editorPanel.style.width = `${100 - newPercent}%`;
+    }
+  }
+
+  function stopResizePanel() {
+    document.removeEventListener("mousemove", resizePanel);
+    document.removeEventListener("mouseup", stopResizePanel);
+    resizerPanel.classList.remove("resizing");
+    if (editor) editor.layout(); // Refresh Monaco
+  }
+
+  // 3. Output Resizer (Height)
+  if (resizerOutput) {
+    resizerOutput.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      document.addEventListener("mousemove", resizeOutput);
+      document.addEventListener("mouseup", stopResizeOutput);
+      resizerOutput.classList.add("resizing");
+    });
+  }
+
+  function resizeOutput(e) {
+    const windowHeight = window.innerHeight;
+    const newHeight = windowHeight - e.clientY;
+
+    if (newHeight > 50 && newHeight < windowHeight * 0.6) {
+      outputPanel.style.height = newHeight + "px";
+      container.style.height = `calc(100vh - 58px - ${newHeight}px)`;
+    }
+  }
+
+  function stopResizeOutput() {
+    document.removeEventListener("mousemove", resizeOutput);
+    document.removeEventListener("mouseup", stopResizeOutput);
+    resizerOutput.classList.remove("resizing");
+    if (editor) editor.layout();
+  }
+}
+
+function initSidebarState() {
+  const isCollapsed = localStorage.getItem("sidebar_collapsed") === "true";
+  const sidebar = document.getElementById("sidebar");
+  const showBtn = document.getElementById("show-sidebar-btn");
+
+  if (isCollapsed && sidebar) {
+    sidebar.classList.add("collapsed");
+    if (showBtn) showBtn.style.display = "block";
+  }
+}
 
 /* ======================================================
    CONSTANTS
@@ -95,6 +240,8 @@ function getEditorContainer() {
 function loadMonaco() {
   initUser(); // Initialize user
   initProgress(); // Initialize sidebar status
+  initSidebarState(); // Restore sidebar state
+  initResizers(); // Enable drag resizing
   require.config({ paths: { vs: MONACO_CDN } });
 
   require(["vs/editor/editor.main"], () => {

@@ -1,0 +1,29 @@
+/* ======================================================
+   RESIZER STYLES
+   ====================================================== */
+
+.resizer {
+    width: 5px;
+    background-color: var(--border);
+    cursor: col-resize;
+    transition: background-color 0.2s;
+    z-index: 10;
+}
+
+.resizer:hover,
+.resizer.resizing {
+    background-color: var(--blue);
+}
+
+.resizer-h {
+    height: 5px;
+    background-color: var(--border);
+    cursor: row-resize;
+    transition: background-color 0.2s;
+    z-index: 10;
+}
+
+.resizer-h:hover,
+.resizer-h.resizing {
+    background-color: var(--blue);
+}
