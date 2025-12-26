@@ -1,0 +1,38 @@
+{
+  "id": "sort_by_key",
+  "title": "Sort by Key (Lambda)",
+  "description": "Input: `items` (list of dicts with 'name', 'age'). Return: List sorted by 'age' ascending.",
+  "difficulty": "Medium",
+  "tags": [
+    "sorting",
+    "lambda"
+  ],
+  "hints": [
+    "Use: sorted(items, key=lambda x: x['age'])"
+  ],
+  "function_signature": "def solve(items):\n    \"\"\"\n    Return result, do not print\n    \"\"\"\n    pass",
+  "sample_input": "[{'name': 'A', 'age': 30}, {'name': 'B', 'age': 20}]",
+  "sample_output": "[{'name': 'B', 'age': 20}, {'name': 'A', 'age': 30}]",
+  "test_cases": [
+    {
+      "input": "[{'name': 'A', 'age': 30}, {'name': 'B', 'age': 20}]",
+      "output": "[{'name': 'B', 'age': 20}, {'name': 'A', 'age': 30}]"
+    },
+    {
+      "input": "[{'name': 'X', 'age': 10}]",
+      "output": "[{'name': 'X', 'age': 10}]"
+    },
+    {
+      "input": "[{'name': 'Z', 'age': 50}, {'name': 'Y', 'age': 40}, {'name': 'X', 'age': 60}]",
+      "output": "[{'name': 'Y', 'age': 40}, {'name': 'Z', 'age': 50}, {'name': 'X', 'age': 60}]"
+    },
+    {
+      "input": "[{'name': 'M', 'age': 25}, {'name': 'N', 'age': 25}]",
+      "output": "[{'name': 'M', 'age': 25}, {'name': 'N', 'age': 25}]"
+    },
+    {
+      "input": "",
+      "output": "[]"
+    }
+  ]
+}

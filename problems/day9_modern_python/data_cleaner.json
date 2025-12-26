@@ -1,0 +1,38 @@
+{
+  "id": "data_cleaner",
+  "title": "Data Cleaner (List Comp)",
+  "description": "Input: `data` (list). Return: List with all `None` values removed using a List Comprehension.",
+  "difficulty": "Easy",
+  "tags": [
+    "lists",
+    "data-processing"
+  ],
+  "hints": [
+    "Use: [x for x in data if x is not None]"
+  ],
+  "function_signature": "def solve(data):\n    \"\"\"\n    Return result, do not print\n    \"\"\"\n    pass",
+  "sample_input": "1, None, 2, 3",
+  "sample_output": "[1, 2, 3]",
+  "test_cases": [
+    {
+      "input": "1, None, 2, 3",
+      "output": "[1, 2, 3]"
+    },
+    {
+      "input": "'a', 'b', None",
+      "output": "['a', 'b']"
+    },
+    {
+      "input": "None, None",
+      "output": "[]"
+    },
+    {
+      "input": "1, 2",
+      "output": "[1, 2]"
+    },
+    {
+      "input": "None, 5, None",
+      "output": "[5]"
+    }
+  ]
+}

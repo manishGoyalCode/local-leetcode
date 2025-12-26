@@ -103,6 +103,13 @@ This project solves that by:
 * Valid Parentheses
 * Stock Trading Logic
 
+### 🗓️ Day 9 — Modern Python 🆕
+
+* List Comprehensions
+* Lambda Functions
+* Error Handling (Try/Except)
+* Generators (Yield)
+
 ---
 
 ## 🛠️ Tech Stack

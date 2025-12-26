@@ -12,7 +12,11 @@ from runner.code_runner import evaluate_code
 app = Flask(__name__)
 
 PROBLEMS_DIR = "problems"
-PROGRESS_FILE = "progress.json"
+# PROGRESS_FILE = "progress.json"  <-- Deprecated
+from database import init_db, mark_solved, get_solved_problems, get_solve_stats
+
+# Initialize DB
+init_db()
 
 # ======================================================
 # FILE & JSON UTILITIES
@@ -23,6 +27,7 @@ def read_json(path):
         return json.load(f)
 
 def write_json(path, data):
+    # Only used for problems generation if needed, but we keep it for now
     with open(path, "w") as f:
         json.dump(data, f, indent=2)
 
@@ -82,37 +87,27 @@ def load_problem_index():
                 "problems": problems
             })
 
-    print("✅ Sidebar index:", index)  # DEBUG
     return index
 
 # ======================================================
 # PROGRESS SERVICES
 # ======================================================
 
-def load_progress():
-    if not os.path.exists(PROGRESS_FILE):
-        return {"solved": []}
-    return read_json(PROGRESS_FILE)
+def get_user_id():
+    # User ID comes from cookie set by frontend (script.js)
+    # Default to 'anonymous' if missing, ensuring backward compat/safety
+    return request.cookies.get("user_id", "anonymous")
 
-
-def save_progress(progress):
-    write_json(PROGRESS_FILE, progress)
-
+def load_solved_list():
+    return get_solved_problems(get_user_id())
 
 def update_progress(problem_id):
     """
-    Update solved list and daily solve log.
+    Mark problem as solved in DB.
     """
-    progress = load_progress()
+    mark_solved(get_user_id(), problem_id)
+    # logger.info(f"🏆 Progress Updated: Solved {problem_id}")
 
-    if problem_id not in progress.get("solved", []):
-        progress.setdefault("solved", []).append(problem_id)
-
-        today = str(date.today())
-        progress.setdefault("solve_log", {})
-        progress["solve_log"].setdefault(today, []).append(problem_id)
-
-        save_progress(progress)
 
 # ======================================================
 # ROUTES – PROBLEM VIEW
@@ -130,13 +125,14 @@ def show_problem(problem_id=None):
         problem_id = sidebar[0]["problems"][0]["id"]
 
     problem = load_problem(problem_id)
-    progress = load_progress()
+    # OLD: progress = load_progress()
+    solved_list = load_solved_list()
 
     return render_template(
         "problem.html",
         problem=problem,
         sidebar=sidebar,
-        solved=progress.get("solved", [])
+        solved=solved_list
     )
 
 # ======================================================
@@ -185,12 +181,14 @@ def calculate_day_stats(sidebar, solved_set):
     return total, stats
 
 
-def calculate_streak(progress):
+def calculate_streak(solve_stats):
     """
-    Calculate current and best streak from solve_log.
+    Calculate current and best streak using DB stats (day -> count).
     """
-    log = progress.get("solve_log", {})
-    sorted_days = sorted(log.keys())
+    if not solve_stats:
+        return 0, 0
+
+    sorted_days = sorted(solve_stats.keys())
 
     streak = 0
     best = 0
@@ -200,9 +198,16 @@ def calculate_streak(progress):
         if prev is None:
             streak = 1
         else:
-            diff = (date.fromisoformat(d) - date.fromisoformat(prev)).days
-            streak = streak + 1 if diff == 1 else 1
-
+            try:
+                # d is 'YYYY-MM-DD' from SQLite
+                curr_date = date.fromisoformat(d)
+                prev_date = date.fromisoformat(prev)
+                diff = (curr_date - prev_date).days
+                
+                streak = streak + 1 if diff == 1 else 1
+            except Exception:
+                streak = 1
+                
         best = max(best, streak)
         prev = d
 
@@ -213,22 +218,26 @@ def calculate_streak(progress):
 # ======================================================
 
 @app.route("/dashboard")
+@app.route("/dashboard")
 def dashboard():
     sidebar = load_problem_index()
-    progress = load_progress()
+    # OLD: progress = load_progress()
+    user_id = get_user_id()
+    solved_list = load_solved_list()
+    solve_stats = get_solve_stats(user_id) # Dict { "2025-12-26": 5 }
 
-    solved = set(progress.get("solved", []))
+    solved_set = set(solved_list)
 
-    total, day_stats = calculate_day_stats(sidebar, solved)
-    overall_percent = int((len(solved) / total) * 100) if total else 0
+    total, day_stats = calculate_day_stats(sidebar, solved_set)
+    overall_percent = int((len(solved_set) / total) * 100) if total else 0
 
-    current_streak, best_streak = calculate_streak(progress)
+    current_streak, best_streak = calculate_streak(solve_stats)
 
     return render_template(
         "dashboard.html",
         overall_percent=overall_percent,
         day_stats=day_stats,
-        solved_count=len(solved),
+        solved_count=len(solved_set),
         total_count=total,
         current_streak=current_streak,
         best_streak=best_streak

@@ -2585,5 +2585,293 @@
         ]
       }
     ]
+  },
+  "day9_modern_python": {
+    "title": "Day 9 — Modern Python",
+    "problems": [
+      {
+        "id": "data_cleaner",
+        "title": "Data Cleaner (List Comp)",
+        "difficulty": "Easy",
+        "tags": [
+          "lists",
+          "data-processing"
+        ],
+        "hints": [
+          "Use: [x for x in data if x is not None]"
+        ],
+        "signature": "def solve(data):",
+        "description": "Input: `data` (list). Return: List with all `None` values removed using a List Comprehension.",
+        "tests": [
+          [
+            [
+              1,
+              null,
+              2,
+              3
+            ],
+            [
+              1,
+              2,
+              3
+            ]
+          ],
+          [
+            [
+              "a",
+              "b",
+              null
+            ],
+            [
+              "a",
+              "b"
+            ]
+          ],
+          [
+            [
+              null,
+              null
+            ],
+            []
+          ],
+          [
+            [
+              1,
+              2
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          [
+            [
+              null,
+              5,
+              null
+            ],
+            [
+              5
+            ]
+          ]
+        ]
+      },
+      {
+        "id": "sort_by_key",
+        "title": "Sort by Key (Lambda)",
+        "difficulty": "Medium",
+        "tags": [
+          "sorting",
+          "lambda"
+        ],
+        "hints": [
+          "Use: sorted(items, key=lambda x: x['age'])"
+        ],
+        "signature": "def solve(items):",
+        "description": "Input: `items` (list of dicts with 'name', 'age'). Return: List sorted by 'age' ascending.",
+        "tests": [
+          [
+            [
+              [
+                {
+                  "name": "A",
+                  "age": 30
+                },
+                {
+                  "name": "B",
+                  "age": 20
+                }
+              ]
+            ],
+            [
+              {
+                "name": "B",
+                "age": 20
+              },
+              {
+                "name": "A",
+                "age": 30
+              }
+            ]
+          ],
+          [
+            [
+              [
+                {
+                  "name": "X",
+                  "age": 10
+                }
+              ]
+            ],
+            [
+              {
+                "name": "X",
+                "age": 10
+              }
+            ]
+          ],
+          [
+            [
+              [
+                {
+                  "name": "Z",
+                  "age": 50
+                },
+                {
+                  "name": "Y",
+                  "age": 40
+                },
+                {
+                  "name": "X",
+                  "age": 60
+                }
+              ]
+            ],
+            [
+              {
+                "name": "Y",
+                "age": 40
+              },
+              {
+                "name": "Z",
+                "age": 50
+              },
+              {
+                "name": "X",
+                "age": 60
+              }
+            ]
+          ],
+          [
+            [
+              [
+                {
+                  "name": "M",
+                  "age": 25
+                },
+                {
+                  "name": "N",
+                  "age": 25
+                }
+              ]
+            ],
+            [
+              {
+                "name": "M",
+                "age": 25
+              },
+              {
+                "name": "N",
+                "age": 25
+              }
+            ]
+          ],
+          [
+            [],
+            []
+          ]
+        ]
+      },
+      {
+        "id": "safe_divider",
+        "title": "Safe Divider (Try/Except)",
+        "difficulty": "Easy",
+        "tags": [
+          "error-handling"
+        ],
+        "hints": [
+          "Use try-except ZeroDivisionError"
+        ],
+        "signature": "def solve(a, b):",
+        "description": "Input: `a`, `b` (numbers). Return: `a / b` or 'Error' if b is 0.",
+        "tests": [
+          [
+            [
+              10,
+              2
+            ],
+            5.0
+          ],
+          [
+            [
+              10,
+              0
+            ],
+            "Error"
+          ],
+          [
+            [
+              0,
+              5
+            ],
+            0.0
+          ],
+          [
+            [
+              5,
+              2
+            ],
+            2.5
+          ],
+          [
+            [
+              -10,
+              0
+            ],
+            "Error"
+          ]
+        ]
+      },
+      {
+        "id": "batch_generator",
+        "title": "Batch Generator (Yield)",
+        "difficulty": "Medium",
+        "tags": [
+          "generators"
+        ],
+        "hints": [
+          "Use 'yield' keyword inside a loop"
+        ],
+        "signature": "def solve(n):",
+        "description": "Input: `n` (int). Return: A list of numbers from 0 to n-1 generated by a generator function (Simulated). For this problem, write a generator `gen(n)` inside `solve` and return `list(gen(n))`.",
+        "tests": [
+          [
+            3,
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          [
+            0,
+            []
+          ],
+          [
+            5,
+            [
+              0,
+              1,
+              2,
+              3,
+              4
+            ]
+          ],
+          [
+            1,
+            [
+              0
+            ]
+          ],
+          [
+            2,
+            [
+              0,
+              1
+            ]
+          ]
+        ]
+      }
+    ]
   }
 }

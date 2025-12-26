@@ -1,7 +1,7 @@
 {
   "id": "checkout_system",
   "title": "E-commerce Checkout",
-  "description": "Input: `price` (number), `discount` (number). Return: Final price after the discount.",
+  "description": "Input: `price` (number), `discount` (number). Return: Final price after discount.",
   "difficulty": "Medium",
   "tags": [
     "math",

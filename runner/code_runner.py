@@ -1,9 +1,13 @@
 import subprocess
 import tempfile
 import sys
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def evaluate_code(user_code, problem):
+    logger.info(f"Runner started for problem: {problem.get('id', 'unknown')}")
     results = []
 
     for idx, case in enumerate(problem["test_cases"], start=1):
@@ -37,9 +41,11 @@ def evaluate_code(user_code, problem):
                     "status": "error",
                     "error": proc.stderr.strip()
                 })
+                logger.warning(f"Result: ERROR (Stderr) - {proc.stderr.strip()[:100]}...")
                 break
                 
         except subprocess.TimeoutExpired:
+            logger.warning("Result: TIMEOUT (2s)")
             results.append({
                 "index": idx,
                 "status": "error",
@@ -80,5 +86,10 @@ def evaluate_code(user_code, problem):
             break
 
     passed_all = all(r["status"] == "passed" for r in results)
+    
+    if passed_all:
+        logger.info("Result: PASSED ALL TESTS")
+    else:
+        logger.info(f"Result: FAILED (Passed {sum(1 for r in results if r['status']=='passed')}/{len(problem['test_cases'])})")
 
     return passed_all, results

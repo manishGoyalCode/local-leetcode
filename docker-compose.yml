@@ -4,7 +4,7 @@ services:
   web:
     build: .
     ports:
-      - "5001:5000"
+      - "5001:8080"
     volumes:
       - .:/app # Mount current directory for hot-reloading/persistence during dev
     environment:

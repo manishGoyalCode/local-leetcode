@@ -4,6 +4,7 @@
 
 let editor = null;
 let isRunning = false;
+let currentUserId = null;
 
 /* ======================================================
    CONSTANTS
@@ -57,6 +58,21 @@ const EDITOR_CONFIG = {
 };
 
 /* ======================================================
+   USER IDENTITY
+   ====================================================== */
+
+function initUser() {
+  let uid = localStorage.getItem("user_id");
+  if (!uid) {
+    uid = "user_" + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem("user_id", uid);
+  }
+  currentUserId = uid;
+  document.cookie = `user_id=${uid}; path=/; max-age=31536000`; // 1 year
+  console.log("👤 User ID:", uid);
+}
+
+/* ======================================================
    DOM HELPERS
 ====================================================== */
 
@@ -77,6 +93,7 @@ function getEditorContainer() {
 ====================================================== */
 
 function loadMonaco() {
+  initUser(); // Initialize user before loading editor
   require.config({ paths: { vs: MONACO_CDN } });
 
   require(["vs/editor/editor.main"], () => {
@@ -86,9 +103,21 @@ function loadMonaco() {
 }
 
 function createEditor() {
+  const savedCode = localStorage.getItem(`code_${PROBLEM_ID}`);
+
   editor = monaco.editor.create(getEditorContainer(), {
-    value: INITIAL_CODE,
+    value: savedCode || INITIAL_CODE,
     ...EDITOR_CONFIG
+  });
+
+  if (savedCode) {
+    showToast("Draft restored");
+  }
+
+  // Auto-Save Listener
+  editor.onDidChangeModelContent(() => {
+    const currentCode = editor.getValue();
+    localStorage.setItem(`code_${PROBLEM_ID}`, currentCode);
   });
 }
 
@@ -225,8 +254,38 @@ function showSystemError(err) {
 ====================================================== */
 
 function resetCode() {
-  editor.setValue(INITIAL_CODE);
-  editor.focus();
+  if (confirm("Reset code to default? Your changes will be lost.")) {
+    editor.setValue(INITIAL_CODE);
+    localStorage.removeItem(`code_${PROBLEM_ID}`);
+    editor.focus();
+  }
+}
+
+function showToast(msg) {
+  const toast = document.createElement("div");
+  toast.innerText = msg;
+  toast.style.position = "fixed";
+  toast.style.bottom = "20px";
+  toast.style.right = "20px";
+  toast.style.background = "var(--green)";
+  toast.style.color = "#000";
+  toast.style.padding = "8px 16px";
+  toast.style.borderRadius = "4px";
+  toast.style.fontWeight = "bold";
+  toast.style.opacity = "0";
+  toast.style.transition = "opacity 0.3s";
+  toast.style.zIndex = "1000";
+
+  document.body.appendChild(toast);
+
+  // Fade in
+  requestAnimationFrame(() => toast.style.opacity = "1");
+
+  // Fade out
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    setTimeout(() => toast.remove(), 300);
+  }, 2000);
 }
 
 /* ======================================================
