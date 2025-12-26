@@ -68,7 +68,12 @@ def load_problem_index():
         for file in sorted(os.listdir(day_path)):
             if file.endswith(".json"):
                 p = read_json(os.path.join(day_path, file))
-                problems.append({"id": p["id"], "title": p["title"]})
+                problems.append({
+                    "id": p["id"], 
+                    "title": p["title"],
+                    "difficulty": p.get("difficulty", "Easy"),
+                    "tags": p.get("tags", [])
+                })
         if problems:
             index.append({"day": day.replace("_", " ").title(), "problems": problems})
     return index
@@ -130,8 +135,8 @@ def run_code():
 
 @app.route("/dashboard")
 def dashboard():
-    # We just render the static frame; JS will fill in the stats
-    return render_template("dashboard.html")
+    sidebar = load_problem_index()
+    return render_template("dashboard.html", sidebar=sidebar)
 
 # ======================================================
 # ENTRY POINT

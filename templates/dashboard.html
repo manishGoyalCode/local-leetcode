@@ -6,12 +6,11 @@
   <link rel="stylesheet" href="/static/style.css">
 
   <style>
-    /* Add simple styles for JS rendered content */
     .day-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 0;
+      padding: 12px 0;
       border-bottom: 1px solid var(--border);
     }
 
@@ -28,6 +27,44 @@
       background: var(--green);
       height: 100%;
       transition: width 0.3s;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .mini-stat {
+      background: var(--bg-alt);
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .mini-stat label {
+      display: block;
+      font-size: 0.8em;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .mini-stat val {
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+
+    .diff-easy {
+      color: #00b894;
+    }
+
+    .diff-med {
+      color: #fdcb6e;
+    }
+
+    .diff-hard {
+      color: #d63031;
     }
   </style>
 </head>
@@ -48,10 +85,22 @@
       <div class="card stat-card">
         <h3>Overall Progress</h3>
         <div id="overall-percent" class="big">0%</div>
-        <p id="overall-text">0 / 0 problems solved</p>
+        <p id="overall-text" class="muted">Loading...</p>
 
         <div class="progress-bar">
           <div id="overall-bar" class="progress-fill" style="width: 0%"></div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="mini-stat"><label>Easy</label>
+            <val id="stat-easy" class="diff-easy">-</val>
+          </div>
+          <div class="mini-stat"><label>Medium</label>
+            <val id="stat-med" class="diff-med">-</val>
+          </div>
+          <div class="mini-stat"><label>Hard</label>
+            <val id="stat-hard" class="diff-hard">-</val>
+          </div>
         </div>
       </div>
 
@@ -64,90 +113,102 @@
     </div>
 
     <div class="card">
-      <h2>📅 Day-wise Progress</h2>
+      <h2>📅 Topic Progress</h2>
       <div id="day-list">
         <!-- Rendered by JS -->
-        <p class="muted">Loading stats...</p>
       </div>
     </div>
 
   </div>
 
   <script>
-    // Configuration of problems (Hardcoded or ideally fetched, but for now we hardcode checking against known days/counts if possible, 
-    // OR BETTER: we fetch the sidebar structure from "/" or just trust the solved list count against a total we know)
-
-    // Actually, to get "Total" counts per day, we need the sidebar data. 
-    // Since this is a static page now, let's fetch the sidebar structure from a JSON endpoint or parse it from the main page?
-    // EASIER: In app.py, let's pass the 'sidebar' object to dashboard template as a JSON variable, 
-    // even if we don't calculate stats server side.
-
-    // For now, let's assume specific totals or just show total solved.
-    // Wait, the user wants "UI processing".
+    // Injected by Flask
+    const CURRICULUM = {{ sidebar | tojson }};
 
     document.addEventListener("DOMContentLoaded", () => {
       const solved = JSON.parse(localStorage.getItem("solved_problems") || "[]");
       const solveLog = JSON.parse(localStorage.getItem("solve_log") || "{}");
 
-      // --- Overall ---
-      // We don't strictly know TOTAL problems in client unless we hardcode it or fetch it.
-      // Let's guess/approximate or just show raw count.
-      const totalProblems = 50; // Approx based on our config (8 days * ~5-8 probs)
-      const percent = Math.round((solved.length / totalProblems) * 100);
+      let totalCount = 0;
+      let solvedCount = 0;
 
+      let diffCounts = { Easy: 0, Medium: 0, Hard: 0 };
+      let diffSolved = { Easy: 0, Medium: 0, Hard: 0 };
+
+      // 1. Traverse Curriculum to build stats
+      CURRICULUM.forEach(day => {
+        day.problems.forEach(prob => {
+          totalCount++;
+
+          // Difficulty Stats
+          const d = prob.difficulty || "Easy";
+          diffCounts[d] = (diffCounts[d] || 0) + 1;
+
+          if (solved.includes(prob.id)) {
+            solvedCount++;
+            diffSolved[d] = (diffSolved[d] || 0) + 1;
+          }
+        });
+      });
+
+      // 2. Update Overall UI
+      const percent = totalCount ? Math.round((solvedCount / totalCount) * 100) : 0;
       document.getElementById("overall-percent").innerText = `${percent}%`;
-      document.getElementById("overall-text").innerText = `${solved.length} / ${totalProblems}+ problems solved`;
+      document.getElementById("overall-text").innerText = `${solvedCount} / ${totalCount} problems solved`;
       document.getElementById("overall-bar").style.width = `${percent}%`;
 
-      // --- Streak ---
-      const dates = Object.keys(solveLog).sort();
-      let streak = 0;
-      let best = 0;
-      let prev = null;
+      document.getElementById("stat-easy").innerText = `${diffSolved.Easy}/${diffCounts.Easy}`;
+      document.getElementById("stat-med").innerText = `${diffSolved.Medium}/${diffCounts.Medium}`;
 
+      if (diffCounts.Hard > 0) {
+        document.getElementById("stat-hard").innerText = `${diffSolved.Hard}/${diffCounts.Hard}`;
+      } else {
+        document.getElementById("stat-hard").innerText = "-";
+      }
+
+      // 3. Streak Logic
+      const dates = Object.keys(solveLog).sort();
+      let streak = 0, best = 0, prev = null;
       dates.forEach(d => {
         if (prev) {
           const diff = (new Date(d) - new Date(prev)) / (1000 * 60 * 60 * 24);
-          if (diff === 1) streak++;
-          else if (diff > 1) streak = 1;
-        } else {
-          streak = 1;
-        }
+          if (diff === 1) streak++; else if (diff > 1) streak = 1;
+        } else streak = 1;
         if (streak > best) best = streak;
         prev = d;
       });
-
-      // Check if current streak is active (today or yesterday)
       const today = new Date().toISOString().split('T')[0];
       const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-      if (dates[dates.length - 1] !== today && dates[dates.length - 1] !== yesterday) {
-        streak = 0;
-      }
+      if (dates.length > 0 && dates[dates.length - 1] !== today && dates[dates.length - 1] !== yesterday) streak = 0;
 
       document.getElementById("current-streak").innerText = streak;
       document.getElementById("best-streak").innerText = best;
 
-      // --- Days ---
-      const daysDiv = document.getElementById("day-list");
-      daysDiv.innerHTML = "";
+      // 4. Render Day List with Progress Bars
+      const listContainer = document.getElementById("day-list");
+      listContainer.innerHTML = "";
 
-      // Simple visualization of recent activity instead of full curriculum breakdown
-      // because we don't have the curriculum map in JS.
-      if (dates.length === 0) {
-        daysDiv.innerHTML = "<p>No activity yet.</p>";
-      } else {
-        // Show last 7 active days
-        dates.slice(-7).reverse().forEach(date => {
-          const count = solveLog[date];
-          const row = document.createElement("div");
-          row.className = "day-row";
-          row.innerHTML = `
-                    <span>${date}</span>
-                    <span>${count} solved</span>
-                `;
-          daysDiv.appendChild(row);
+      CURRICULUM.forEach(day => {
+        let dayTotal = 0;
+        let daySolved = 0;
+        day.problems.forEach(p => {
+          dayTotal++;
+          if (solved.includes(p.id)) daySolved++;
         });
-      }
+
+        const dayPercent = dayTotal ? Math.round((daySolved / dayTotal) * 100) : 0;
+
+        const row = document.createElement("div");
+        row.className = "day-row";
+        row.innerHTML = `
+                <div style="width: 150px; font-weight: 500;">${day.day}</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${dayPercent}%"></div>
+                </div>
+                <div style="width: 60px; text-align: right; color: var(--text-dim);">${daySolved}/${dayTotal}</div>
+            `;
+        listContainer.appendChild(row);
+      });
     });
   </script>
 
