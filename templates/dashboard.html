@@ -74,7 +74,10 @@
 
   <header class="topbar">
     <div class="logo">🚀 DynoCode</div>
-    <a href="/" class="nav-link">← Practice</a>
+    <div style="display:flex; gap:10px;">
+      <a href="/problem/" class="nav-link">← Practice</a>
+      <a href="/logout" class="nav-link">Logout</a>
+    </div>
   </header>
 
   <div class="dashboard">
@@ -199,10 +202,13 @@
 
         const dayPercent = dayTotal ? Math.round((daySolved / dayTotal) * 100) : 0;
 
+        const firstProblemId = day.problems.length > 0 ? day.problems[0].id : "#";
         const row = document.createElement("div");
         row.className = "day-row";
         row.innerHTML = `
-                <div style="width: 150px; font-weight: 500;">${day.day}</div>
+                <div style="width: 150px; font-weight: 500;">
+                    <a href="/problem/${firstProblemId}" style="text-decoration:none; color:var(--blue);">${day.day}</a>
+                </div>
                 <div class="progress-bar">
                     <div class="progress-fill" style="width: ${dayPercent}%"></div>
                 </div>

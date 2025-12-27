@@ -1,16 +1,12 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash
+from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
 import json
 import os
-from datetime import date
-
-from runner.code_runner import evaluate_code
-
-# ======================================================
-# APP CONFIG
-# ======================================================
-
+import logging
 from dotenv import load_dotenv
-from models import db, Problem
+from models import db, Problem, User
+from runner.code_runner import evaluate_code
 
 # Load env variables
 load_dotenv()
@@ -20,6 +16,7 @@ load_dotenv()
 # ======================================================
 
 app = Flask(__name__)
+app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key-change-in-prod")
 
 # Verify Database URL
 database_url = os.getenv("DATABASE_URL")
@@ -31,8 +28,6 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # Initialize DB with App
 db.init_app(app)
-
-import logging
 
 # Configure Logging
 logging.basicConfig(
@@ -50,6 +45,25 @@ if __name__ != '__main__':
 logger = logging.getLogger(__name__)
 
 # ======================================================
+# AUTH HELPERS
+# ======================================================
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.context_processor
+def inject_user():
+    if 'user_id' in session:
+        user = db.session.get(User, session['user_id'])
+        return dict(current_user=user)
+    return dict(current_user=None)
+
+# ======================================================
 # PROBLEM SERVICES
 # ======================================================
 
@@ -63,15 +77,7 @@ def load_problem(problem_id):
 
 def load_problem_index():
     """Build sidebar from all DB problems."""
-    # Note: In a real app, you might want to categorize by a 'group' column.
-    # Current DB schema doesn't have 'day' or 'group'. 
-    # For now, we'll put everything in "All Problems" or categorize by difficulty.
-    # OR, we can just return a flat list.
-    
     problems = Problem.query.order_by(Problem.id).all()
-    
-    # Ideally we should have migrated the 'group' info. 
-    # Since we didn't, let's group by Difficulty or just one big list.
     
     # Grouping by Difficulty for better UX
     groups = {}
@@ -101,11 +107,74 @@ def load_problem_index():
     return index
 
 # ======================================================
-# ROUTES – PROBLEM VIEW
+# ROUTES – AUTH
+# ======================================================
+
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        
+        if not username or not password:
+            flash("Please fill in all fields")
+            return redirect(url_for("signup"))
+            
+        existing = User.query.filter_by(username=username).first()
+        if existing:
+            flash("Username already taken")
+            return redirect(url_for("signup"))
+            
+        # Use pbkdf2:sha256 for compatibility
+        hashed_pw = generate_password_hash(password, method='pbkdf2:sha256')
+        new_user = User(username=username, password_hash=hashed_pw)
+        db.session.add(new_user)
+        db.session.commit()
+        
+        flash("Account created! Please login.")
+        return redirect(url_for("login"))
+        
+    return render_template("signup.html")
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        
+        user = User.query.filter_by(username=username).first()
+        
+        if user and check_password_hash(user.password_hash, password):
+            session['user_id'] = user.id
+            flash(f"Welcome back, {user.username}!")
+            return redirect(url_for("dashboard"))
+        else:
+            flash("Invalid username or password")
+            return redirect(url_for("login"))
+            
+    return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("You have been logged out.")
+    return redirect(url_for("login"))
+
+# ======================================================
+# ROUTES – APP
 # ======================================================
 
 @app.route("/")
+def index():
+    if 'user_id' in session:
+        return redirect(url_for('dashboard'))
+    return redirect(url_for('login'))
+
+@app.route("/")
+@app.route("/problem")
+@app.route("/problem/")
 @app.route("/problem/<problem_id>")
+@login_required
 def show_problem(problem_id=None):
     sidebar = load_problem_index()
 
@@ -113,7 +182,6 @@ def show_problem(problem_id=None):
         return "❌ No problems found in Database."
 
     if problem_id is None:
-        # Pick first problem of first group
         try:
             problem_id = sidebar[0]["problems"][0]["id"]
         except:
@@ -132,11 +200,8 @@ def show_problem(problem_id=None):
         sidebar=sidebar
     )
 
-# ======================================================
-# ROUTES – RUN CODE
-# ======================================================
-
 @app.route("/run", methods=["POST"])
+@login_required
 def run_code():
     data = request.json
     code = data.get("code")
@@ -167,22 +232,11 @@ def run_code():
             "details": [{"status": "error", "error": str(e)}]
         })
 
-
-# ======================================================
-# ROUTES – DASHBOARD
-# ======================================================
-
 @app.route("/dashboard")
+@login_required
 def dashboard():
     sidebar = load_problem_index()
     return render_template("dashboard.html", sidebar=sidebar)
-
-# ======================================================
-# ENTRY POINT
-# ======================================================
-@app.route("/")
-def hello():
-    return "Hello from DO App Platform!"
 
 if __name__ == "__main__":
     app.run(
