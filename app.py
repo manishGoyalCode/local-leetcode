@@ -9,12 +9,30 @@ from runner.code_runner import evaluate_code
 # APP CONFIG
 # ======================================================
 
+from dotenv import load_dotenv
+from models import db, Problem
+
+# Load env variables
+load_dotenv()
+
+# ======================================================
+# APP CONFIG
+# ======================================================
+
 app = Flask(__name__)
 
-PROBLEMS_DIR = "problems"
+# Verify Database URL
+database_url = os.getenv("DATABASE_URL")
+if not database_url:
+    raise ValueError("❌ DATABASE_URL missing in environment variables")
+
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+# Initialize DB with App
+db.init_app(app)
+
 import logging
-# PROGRESS_FILE = "progress.json"  <-- Deprecated
-# Database removed in favor of LocalStorage (Client-side progress)
 
 # Configure Logging
 logging.basicConfig(
@@ -32,50 +50,54 @@ if __name__ != '__main__':
 logger = logging.getLogger(__name__)
 
 # ======================================================
-# FILE & JSON UTILITIES
-# ======================================================
-def read_json(path):
-    with open(path) as f:
-        return json.load(f)
-
-def write_json(path, data):
-    with open(path, "w") as f:
-        json.dump(data, f, indent=2)
-
-# ======================================================
 # PROBLEM SERVICES
 # ======================================================
 
 def load_problem(problem_id):
-    for day in os.listdir(PROBLEMS_DIR):
-        day_path = os.path.join(PROBLEMS_DIR, day)
-        if not os.path.isdir(day_path):
-            continue
-        for file in os.listdir(day_path):
-            if file.endswith(".json"):
-                problem = read_json(os.path.join(day_path, file))
-                if problem["id"] == problem_id:
-                    return problem
-    raise Exception(f"Problem {problem_id} not found")
+    """Fetch specific problem from DB."""
+    problem = db.session.get(Problem, problem_id)
+    if not problem:
+        raise Exception(f"Problem {problem_id} not found")
+    # Return as dictionary for compatibility with runner and template
+    return problem.to_dict()
 
 def load_problem_index():
+    """Build sidebar from all DB problems."""
+    # Note: In a real app, you might want to categorize by a 'group' column.
+    # Current DB schema doesn't have 'day' or 'group'. 
+    # For now, we'll put everything in "All Problems" or categorize by difficulty.
+    # OR, we can just return a flat list.
+    
+    problems = Problem.query.order_by(Problem.id).all()
+    
+    # Ideally we should have migrated the 'group' info. 
+    # Since we didn't, let's group by Difficulty or just one big list.
+    
+    # Grouping by Difficulty for better UX
+    groups = {}
+    for p in problems:
+        diff = p.difficulty or "Unknown"
+        if diff not in groups:
+            groups[diff] = []
+        
+        groups[diff].append({
+            "id": p.id,
+            "title": p.title,
+            "difficulty": p.difficulty,
+            "tags": p.tags
+        })
+
     index = []
-    for day in sorted(os.listdir(PROBLEMS_DIR)):
-        day_path = os.path.join(PROBLEMS_DIR, day)
-        if not os.path.isdir(day_path):
-            continue
-        problems = []
-        for file in sorted(os.listdir(day_path)):
-            if file.endswith(".json"):
-                p = read_json(os.path.join(day_path, file))
-                problems.append({
-                    "id": p["id"], 
-                    "title": p["title"],
-                    "difficulty": p.get("difficulty", "Easy"),
-                    "tags": p.get("tags", [])
-                })
-        if problems:
-            index.append({"day": day.replace("_", " ").title(), "problems": problems})
+    # Sort order: Easy, Medium, Hard
+    for diff in ["Easy", "Medium", "Hard"]:
+        if diff in groups:
+            index.append({"day": f"{diff} Problems", "problems": groups[diff]})
+            
+    # Add any others
+    for diff in groups:
+        if diff not in ["Easy", "Medium", "Hard"]:
+            index.append({"day": f"{diff} Problems", "problems": groups[diff]})
+            
     return index
 
 # ======================================================
@@ -88,19 +110,26 @@ def show_problem(problem_id=None):
     sidebar = load_problem_index()
 
     if not sidebar:
-        return "❌ No problems found. Check problems/ folder."
+        return "❌ No problems found in Database."
 
     if problem_id is None:
-        problem_id = sidebar[0]["problems"][0]["id"]
+        # Pick first problem of first group
+        try:
+            problem_id = sidebar[0]["problems"][0]["id"]
+        except:
+             return "❌ No problems available."
     
     logger.info(f"👀 View Problem: {problem_id}")
-    problem = load_problem(problem_id)
+    
+    try:
+        problem = load_problem(problem_id)
+    except Exception as e:
+        return f"❌ {str(e)}"
 
     return render_template(
         "problem.html",
         problem=problem,
         sidebar=sidebar
-        # Solved list is now handled by client-side JS
     )
 
 # ======================================================
@@ -110,23 +139,33 @@ def show_problem(problem_id=None):
 @app.route("/run", methods=["POST"])
 def run_code():
     data = request.json
-    code = data["code"]
-    problem_id = data["problem_id"]
+    code = data.get("code")
+    problem_id = data.get("problem_id")
+    
+    if not code or not problem_id:
+         return jsonify({"passed": False, "details": [{"status": "error", "error": "Missing code or problem_id"}]})
     
     logger.info(f"🚀 Run Code: {problem_id}")
 
-    problem = load_problem(problem_id)
-    passed, details = evaluate_code(code, problem)
-    
-    if passed:
-        logger.info(f"✅ Solved: {problem_id}")
-    else:
-        logger.info(f"❌ Failed: {problem_id}")
+    try:
+        problem = load_problem(problem_id)
+        passed, details = evaluate_code(code, problem)
+        
+        if passed:
+            logger.info(f"✅ Solved: {problem_id}")
+        else:
+            logger.info(f"❌ Failed: {problem_id}")
 
-    return jsonify({
-        "passed": passed,
-        "details": details
-    })
+        return jsonify({
+            "passed": passed,
+            "details": details
+        })
+    except Exception as e:
+        logger.error(f"Execution Error: {e}")
+        return jsonify({
+            "passed": False,
+            "details": [{"status": "error", "error": str(e)}]
+        })
 
 
 # ======================================================
