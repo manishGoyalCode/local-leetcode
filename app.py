@@ -5,8 +5,9 @@ import json
 import os
 import logging
 from dotenv import load_dotenv
-from models import db, Problem, User
+from models import db, Problem, User, Submission
 from runner.code_runner import evaluate_code
+from sqlalchemy import func
 
 # Load env variables
 load_dotenv()
@@ -189,15 +190,27 @@ def show_problem(problem_id=None):
     
     logger.info(f"👀 View Problem: {problem_id}")
     
+    # Fetch solved IDs for sidebar
+    solved_ids = set()
+    if 'user_id' in session:
+        submissions = db.session.query(Submission.problem_id).filter_by(
+            user_id=session['user_id'], status='passed'
+        ).distinct().all()
+        solved_ids = set([s[0] for s in submissions])
+
     try:
         problem = load_problem(problem_id)
+        # Check if current problem is solved
+        problem['is_solved'] = (problem_id in solved_ids)
+        
     except Exception as e:
         return f"❌ {str(e)}"
 
     return render_template(
         "problem.html",
         problem=problem,
-        sidebar=sidebar
+        sidebar=sidebar,
+        solved=solved_ids
     )
 
 @app.route("/run", methods=["POST"])
@@ -213,8 +226,19 @@ def run_code():
     logger.info(f"🚀 Run Code: {problem_id}")
 
     try:
-        problem = load_problem(problem_id)
-        passed, details = evaluate_code(code, problem)
+        problem_data = load_problem(problem_id)
+        passed, details = evaluate_code(code, problem_data)
+        
+        # Save Submission
+        status = 'passed' if passed else 'failed'
+        new_submission = Submission(
+            user_id=session['user_id'],
+            problem_id=problem_id,
+            code=code,
+            status=status
+        )
+        db.session.add(new_submission)
+        db.session.commit()
         
         if passed:
             logger.info(f"✅ Solved: {problem_id}")
@@ -232,11 +256,64 @@ def run_code():
             "details": [{"status": "error", "error": str(e)}]
         })
 
+
 @app.route("/dashboard")
 @login_required
 def dashboard():
+    user_id = session['user_id']
+    
+    # 1. Fetch all problems (for total counts)
+    all_problems = Problem.query.all()
+    
+    # 2. Fetch user's passed submissions (distinct problem_ids)
+    solved_problems = db.session.query(Submission.problem_id).filter_by(
+        user_id=user_id, status='passed'
+    ).distinct().all()
+    solved_ids = set([s[0] for s in solved_problems])
+    
+    # 3. Build Stats
+    stats = {
+        "total": len(all_problems),
+        "solved": len(solved_ids),
+        "easy_total": 0, "easy_solved": 0,
+        "med_total": 0, "med_solved": 0,
+        "hard_total": 0, "hard_solved": 0
+    }
+    
+    # 4. Group by difficulty
+    # We can optimize this later with group_by queries but pure python is fine for <1000 items
+    for p in all_problems:
+        diff = (p.difficulty or "Easy").lower()
+        if "easy" in diff:
+            stats["easy_total"] += 1
+            if p.id in solved_ids: stats["easy_solved"] += 1
+        elif "medium" in diff:
+            stats["med_total"] += 1
+            if p.id in solved_ids: stats["med_solved"] += 1
+        elif "hard" in diff:
+            stats["hard_total"] += 1
+            if p.id in solved_ids: stats["hard_solved"] += 1
+            
+    # Sidebar is still needed for list details? 
+    # Or we can pass a enriched object.
+    # Let's pass 'curriculum' object to template with solved flags.
+    
     sidebar = load_problem_index()
-    return render_template("dashboard.html", sidebar=sidebar)
+    
+    # Inject 'solved' status into sidebar for dashboard view
+    # sidebar structure: [{'day': 'Easy Problems', 'problems': [{id, title...}]}]
+    for group in sidebar:
+        group_solved = 0
+        for p in group['problems']:
+            is_solved = (p['id'] in solved_ids)
+            p['solved'] = is_solved
+            if is_solved:
+                group_solved += 1
+        
+        group['solved_count'] = group_solved
+        group['total_count'] = len(group['problems'])
+            
+    return render_template("dashboard.html", stats=stats, curriculum=sidebar)
 
 if __name__ == "__main__":
     app.run(
